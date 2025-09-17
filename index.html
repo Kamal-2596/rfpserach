@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#21808d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Universal RFP Monitor">
+    <meta name="msapplication-TileColor" content="#21808d">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <title>Universal RFP Monitoring Platform</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- PWA Install Banner -->
+    <div id="installBanner" class="install-banner hidden">
+        <div class="install-banner-content">
+            <div class="install-banner-text">
+                <h3>Install Universal RFP Monitor</h3>
+                <p>Get quick access and work offline</p>
+            </div>
+            <div class="install-banner-actions">
+                <button id="installBtn" class="btn btn--primary btn--sm">Install</button>
+                <button id="dismissInstallBtn" class="btn btn--outline btn--sm">Dismiss</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Network Status -->
+    <div id="networkStatus" class="network-status hidden">
+        <span id="networkStatusText">You're offline. Some features may be limited.</span>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div id="progressIndicator" class="progress-indicator hidden">
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <div class="progress-text">Loading...</div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-container">
+            <div class="welcome-header">
+                <div class="welcome-icon">🎯</div>
+                <h1>Universal RFP Monitoring Platform</h1>
+                <p class="welcome-subtitle">Enterprise-grade RFP monitoring for all technologies and industries</p>
+                <div class="platform-features">
+                    <div class="feature-badge">📊 Multi-Technology Support</div>
+                    <div class="feature-badge">👥 Advanced User Management</div>
+                    <div class="feature-badge">🔍 Configurable Search Areas</div>
+                    <div class="feature-badge">📧 Automated Notifications</div>
+                </div>
+            </div>
+            
+            <div class="auth-section">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login" type="button">Login</button>
+                    <button class="auth-tab" data-tab="register" type="button">Register</button>
+                </div>
+                
+                <!-- Login Form -->
+                <div id="loginTab" class="auth-content active">
+                    <form id="loginForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="loginEmail" class="form-label">Email Address</label>
+                            <input type="email" id="loginEmail" name="loginEmail" class="form-control" required placeholder="Enter your email" autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" id="loginPassword" name="loginPassword" class="form-control" required placeholder="Enter your password" autocomplete="current-password">
+                        </div>
+                        <button type="submit" class="btn btn--primary btn--full-width">Login to Platform</button>
+                        <div class="demo-info">
+                            <p><strong>Demo Access:</strong> Any valid email format will work for demonstration</p>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Registration Form -->
+                <div id="registerTab" class="auth-content">
+                    <form id="registerForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="regFullName" class="form-label">Full Name</label>
+                            <input type="text" id="regFullName" name="regFullName" class="form-control" required placeholder="Enter your full name" autocomplete="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="regEmail" class="form-label">Email Address</label>
+                            <input type="email" id="regEmail" name="regEmail" class="form-control" required placeholder="Enter your email" autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="regDepartment" class="form-label">Department</label>
+                            <select id="regDepartment" name="regDepartment" class="form-control" required>
+                                <option value="">Select Department</option>
+                                <option value="IT">Information Technology</option>
+                                <option value="Procurement">Procurement</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Operations">Operations</option>
+                                <option value="Security">Cyber Security</option>
+                                <option value="Analytics">Data & Analytics</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="regPassword" class="form-label">Password</label>
+                            <input type="password" id="regPassword" name="regPassword" class="form-control" required placeholder="Create a password" autocomplete="new-password">
+                        </div>
+                        <button type="submit" class="btn btn--primary btn--full-width">Create Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Onboarding Modal -->
+    <div id="onboardingModal" class="modal onboarding-modal hidden">
+        <div class="modal-content onboarding-content">
+            <div class="onboarding-header">
+                <h2>Welcome to the Universal RFP Monitor!</h2>
+                <p>Let's set up your personalized monitoring experience</p>
+                <div class="onboarding-progress">
+                    <div class="progress-steps">
+                        <div class="step active" data-step="1">1</div>
+                        <div class="step" data-step="2">2</div>
+                        <div class="step" data-step="3">3</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 1: Profile Setup -->
+            <div id="onboardingStep1" class="onboarding-step active">
+                <h3>Complete Your Profile</h3>
+                <form id="profileSetupForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Avatar</label>
+                            <div class="avatar-selector">
+                                <div class="avatar-options">
+                                    <button type="button" class="avatar-option active" data-avatar="👤">👤</button>
+                                    <button type="button" class="avatar-option" data-avatar="👨‍💼">👨‍💼</button>
+                                    <button type="button" class="avatar-option" data-avatar="👩‍💼">👩‍💼</button>
+                                    <button type="button" class="avatar-option" data-avatar="🧑‍💻">🧑‍💻</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileTimezone" class="form-label">Timezone</label>
+                            <select id="profileTimezone" class="form-control">
+                                <option value="America/Toronto">Eastern Time (Toronto)</option>
+                                <option value="America/Vancouver">Pacific Time (Vancouver)</option>
+                                <option value="America/Edmonton">Mountain Time (Edmonton)</option>
+                                <option value="America/Winnipeg">Central Time (Winnipeg)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileBio" class="form-label">Bio (Optional)</label>
+                        <textarea id="profileBio" class="form-control" rows="3" placeholder="Tell us about your role and interests..."></textarea>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Step 2: Search Areas -->
+            <div id="onboardingStep2" class="onboarding-step">
+                <h3>Select Your Technology Interests</h3>
+                <p>Choose the technologies and areas you want to monitor:</p>
+                <div class="search-area-grid">
+                    <div class="search-area-card" data-area="SAP">
+                        <div class="area-icon">🏢</div>
+                        <h4>SAP</h4>
+                        <p>ERP, S/4HANA, Ariba, SuccessFactors</p>
+                        <input type="checkbox" class="area-checkbox" value="sap">
+                    </div>
+                    <div class="search-area-card" data-area="Cloud">
+                        <div class="area-icon">☁️</div>
+                        <h4>Cloud Services</h4>
+                        <p>AWS, Azure, GCP, Hybrid Cloud</p>
+                        <input type="checkbox" class="area-checkbox" value="cloud">
+                    </div>
+                    <div class="search-area-card" data-area="AI">
+                        <div class="area-icon">🤖</div>
+                        <h4>AI & ML</h4>
+                        <p>Machine Learning, Analytics, Automation</p>
+                        <input type="checkbox" class="area-checkbox" value="ai">
+                    </div>
+                    <div class="search-area-card" data-area="Security">
+                        <div class="area-icon">🔒</div>
+                        <h4>Cyber Security</h4>
+                        <p>SIEM, Endpoint, Network Security</p>
+                        <input type="checkbox" class="area-checkbox" value="security">
+                    </div>
+                    <div class="search-area-card" data-area="IT">
+                        <div class="area-icon">💻</div>
+                        <h4>IT Infrastructure</h4>
+                        <p>Networking, Servers, Storage</p>
+                        <input type="checkbox" class="area-checkbox" value="it_infrastructure">
+                    </div>
+                    <div class="search-area-card" data-area="Microsoft">
+                        <div class="area-icon">📊</div>
+                        <h4>Microsoft</h4>
+                        <p>Office 365, SharePoint, Dynamics</p>
+                        <input type="checkbox" class="area-checkbox" value="microsoft">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 3: Preferences -->
+            <div id="onboardingStep3" class="onboarding-step">
+                <h3>Notification Preferences</h3>
+                <div class="preferences-grid">
+                    <div class="preference-group">
+                        <h4>Email Notifications</h4>
+                        <div class="preference-item">
+                            <label>
+                                <input type="checkbox" id="dailyDigest" checked>
+                                Daily RFP digest
+                            </label>
+                        </div>
+                        <div class="preference-item">
+                            <label>
+                                <input type="checkbox" id="instantAlerts">
+                                Instant alerts for high-value RFPs
+                            </label>
+                        </div>
+                        <div class="preference-item">
+                            <label>
+                                <input type="checkbox" id="weeklyReport">
+                                Weekly summary report
+                            </label>
+                        </div>
+                    </div>
+                    <div class="preference-group">
+                        <h4>Dashboard Layout</h4>
+                        <div class="layout-options">
+                            <button type="button" class="layout-option active" data-layout="default">
+                                <div class="layout-preview">📊📈📋</div>
+                                <span>Analytics Focus</span>
+                            </button>
+                            <button type="button" class="layout-option" data-layout="compact">
+                                <div class="layout-preview">📋📊📈</div>
+                                <span>List Focus</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="onboarding-actions">
+                <button id="prevOnboardingBtn" class="btn btn--outline" type="button" disabled>Previous</button>
+                <button id="nextOnboardingBtn" class="btn btn--primary" type="button">Next</button>
+                <button id="completeOnboardingBtn" class="btn btn--primary hidden" type="button">Complete Setup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="main-app hidden">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="app-title">Universal RFP Monitor</h1>
+                    <span id="pwaStatusIndicator" class="pwa-status"></span>
+                </div>
+                <div class="header-actions">
+                    <div class="user-profile">
+                        <div class="user-avatar" id="userAvatar">👤</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userName">User</div>
+                            <div class="user-role" id="userRole">Role</div>
+                        </div>
+                    </div>
+                    <button id="refreshDataBtn" class="btn btn--outline btn--sm" type="button">
+                        <span id="refreshIcon">🔄</span> Sync
+                    </button>
+                    <button id="userMenuBtn" class="btn btn--outline btn--sm" type="button">
+                        <span>⚙️</span> Menu
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="app-layout">
+            <!-- Sidebar Navigation -->
+            <nav class="app-sidebar" role="navigation">
+                <div class="nav-section">
+                    <h3>Overview</h3>
+                    <ul class="nav-list">
+                        <li><button class="nav-item active" data-tab="dashboard" type="button">📊 Dashboard</button></li>
+                        <li><button class="nav-item" data-tab="search-areas" type="button">🔍 Search Areas</button></li>
+                        <li><button class="nav-item" data-tab="rfps" type="button">📋 RFP Monitor</button></li>
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <h3>Management</h3>
+                    <ul class="nav-list">
+                        <li><button class="nav-item" data-tab="users" type="button">👥 User Management</button></li>
+                        <li><button class="nav-item" data-tab="entities" type="button">🏢 Organizations</button></li>
+                        <li><button class="nav-item" data-tab="notifications" type="button">📧 Notifications</button></li>
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <h3>Analytics</h3>
+                    <ul class="nav-list">
+                        <li><button class="nav-item" data-tab="reports" type="button">📈 Reports</button></li>
+                        <li><button class="nav-item" data-tab="audit" type="button">📜 Audit Logs</button></li>
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <h3>Settings</h3>
+                    <ul class="nav-list">
+                        <li><button class="nav-item" data-tab="profile" type="button">👤 My Profile</button></li>
+                        <li><button class="nav-item" data-tab="system" type="button">⚙️ System</button></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="app-main">
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content active">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>Dashboard Overview</h2>
+                            <p>Real-time insights into your RFP monitoring activities</p>
+                        </div>
+                        <div class="page-actions">
+                            <span id="lastSyncTime" class="sync-info">Last sync: Never</span>
+                            <button id="customizeDashboardBtn" class="btn btn--outline" type="button">Customize</button>
+                        </div>
+                    </div>
+
+                    <!-- Personal KPIs -->
+                    <div class="kpi-section">
+                        <h3>Your Activity</h3>
+                        <div class="kpi-grid">
+                            <div class="kpi-card">
+                                <div class="kpi-icon">🎯</div>
+                                <div class="kpi-content">
+                                    <h3 id="personalRfps">0</h3>
+                                    <p>Monitored RFPs</p>
+                                </div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-icon">🆕</div>
+                                <div class="kpi-content">
+                                    <h3 id="newToday">0</h3>
+                                    <p>New Today</p>
+                                </div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-icon">📊</div>
+                                <div class="kpi-content">
+                                    <h3 id="activeAreas">0</h3>
+                                    <p>Active Search Areas</p>
+                                </div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-icon">📧</div>
+                                <div class="kpi-content">
+                                    <h3 id="alertsReceived">0</h3>
+                                    <p>Alerts This Week</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3>RFPs by Technology Area</h3>
+                            </div>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="technologyChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3>Activity Trends</h3>
+                            </div>
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="trendsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="recent-activity">
+                        <div class="section-header">
+                            <h3>Recent RFP Opportunities</h3>
+                            <button id="viewAllRfpsBtn" class="btn btn--outline btn--sm" type="button">View All</button>
+                        </div>
+                        <div class="activity-feed" id="recentActivityFeed">
+                            <!-- Activity items will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Areas Tab -->
+                <div id="search-areas" class="tab-content">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>Search Areas Configuration</h2>
+                            <p>Manage your technology monitoring areas and keywords</p>
+                        </div>
+                        <div class="page-actions">
+                            <button id="addSearchAreaBtn" class="btn btn--primary" type="button">+ Add Search Area</button>
+                            <button id="manageTemplatesBtn" class="btn btn--outline" type="button">Templates</button>
+                        </div>
+                    </div>
+
+                    <!-- Search Area Categories -->
+                    <div class="search-areas-grid">
+                        <div class="search-area-category active" data-category="active">
+                            <div class="category-header">
+                                <h3>🟢 Active Areas <span class="count" id="activeAreasCount">0</span></h3>
+                            </div>
+                            <div class="areas-list" id="activeAreasList">
+                                <!-- Active search areas will be populated here -->
+                            </div>
+                        </div>
+                        <div class="search-area-category" data-category="templates">
+                            <div class="category-header">
+                                <h3>📋 Templates <span class="count" id="templatesCount">6</span></h3>
+                            </div>
+                            <div class="areas-list" id="templatesList">
+                                <!-- Template areas will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management Tab -->
+                <div id="users" class="tab-content">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>User Management</h2>
+                            <p>Manage users, roles, and permissions</p>
+                        </div>
+                        <div class="page-actions">
+                            <input type="text" id="userSearch" class="form-control search-input" placeholder="Search users...">
+                            <select id="roleFilter" class="form-control">
+                                <option value="">All Roles</option>
+                                <option value="Super Admin">Super Admin</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Editor">Editor</option>
+                                <option value="Viewer">Viewer</option>
+                            </select>
+                            <button id="inviteUserBtn" class="btn btn--primary" type="button">+ Invite User</button>
+                        </div>
+                    </div>
+
+                    <div class="users-grid" id="usersGrid">
+                        <!-- User cards will be dynamically populated -->
+                    </div>
+                </div>
+
+                <!-- RFPs Tab -->
+                <div id="rfps" class="tab-content">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>RFP Monitor</h2>
+                            <p>Track and manage RFP opportunities across all search areas</p>
+                        </div>
+                        <div class="page-actions">
+                            <div class="filters-row">
+                                <input type="text" id="rfpSearch" class="form-control search-input" placeholder="Search RFPs...">
+                                <select id="rfpAreaFilter" class="form-control">
+                                    <option value="">All Areas</option>
+                                </select>
+                                <select id="rfpStatusFilter" class="form-control">
+                                    <option value="">All Status</option>
+                                    <option value="New">New</option>
+                                    <option value="Reviewing">Reviewing</option>
+                                    <option value="Tracked">Tracked</option>
+                                    <option value="Archived">Archived</option>
+                                </select>
+                                <button id="bulkActionsRfpBtn" class="btn btn--outline" type="button">Bulk Actions</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rfp-table-container">
+                        <table id="rfpsTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAllRfps"></th>
+                                    <th>Title</th>
+                                    <th>Organization</th>
+                                    <th>Technology Area</th>
+                                    <th>Value</th>
+                                    <th>Posted</th>
+                                    <th>Closing</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rfpsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Other tabs with placeholder content -->
+                <div id="entities" class="tab-content">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>Organization Management</h2>
+                            <p>Manage entity data and technology profiles</p>
+                        </div>
+                    </div>
+                    <div class="content-placeholder">
+                        <p>Organization management interface will be implemented here</p>
+                    </div>
+                </div>
+
+                <div id="notifications" class="tab-content">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>Notification Management</h2>
+                            <p>Configure email alerts and notification settings</p>
+                        </div>
+                    </div>
+                    <div class="content-placeholder">
+                        <p>Notification management interface will be implemented here</p>
+                    </div>
+                </div>
+
+                <div id="reports" class="tab-content">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>Analytics & Reports</h2>
+                            <p>Generate reports and analyze RFP trends</p>
+                        </div>
+                    </div>
+                    <div class="content-placeholder">
+                        <p>Advanced reporting interface will be implemented here</p>
+                    </div>
+                </div>
+
+                <div id="audit" class="tab-content">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>Audit Logs</h2>
+                            <p>Track system activities and user actions</p>
+                        </div>
+                    </div>
+                    <div class="audit-interface">
+                        <div class="audit-filters">
+                            <input type="text" id="auditSearch" class="form-control" placeholder="Search audit logs...">
+                            <select id="auditUserFilter" class="form-control">
+                                <option value="">All Users</option>
+                            </select>
+                            <select id="auditActionFilter" class="form-control">
+                                <option value="">All Actions</option>
+                                <option value="Login">Login</option>
+                                <option value="User Created">User Created</option>
+                                <option value="Search Area Modified">Search Area Modified</option>
+                                <option value="RFP Updated">RFP Updated</option>
+                            </select>
+                        </div>
+                        <div class="audit-log" id="auditLog">
+                            <!-- Audit entries will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="profile" class="tab-content">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>My Profile</h2>
+                            <p>Manage your account settings and preferences</p>
+                        </div>
+                    </div>
+                    <div class="profile-interface">
+                        <div class="profile-sections">
+                            <div class="profile-section">
+                                <h3>Profile Information</h3>
+                                <form id="profileUpdateForm">
+                                    <div class="form-group">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" id="profileFullName" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" id="profileEmail" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Department</label>
+                                        <input type="text" id="profileDepartment" class="form-control">
+                                    </div>
+                                    <button type="submit" class="btn btn--primary">Update Profile</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="system" class="tab-content">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>System Settings</h2>
+                            <p>Manage system configuration and data</p>
+                        </div>
+                    </div>
+                    <div class="system-interface">
+                        <div class="system-sections">
+                            <div class="system-section">
+                                <h3>Data Management</h3>
+                                <div class="system-actions">
+                                    <button id="exportDataBtn" class="btn btn--outline" type="button">Export All Data</button>
+                                    <button id="backupDataBtn" class="btn btn--outline" type="button">Backup System</button>
+                                    <button id="clearCacheBtn" class="btn btn--outline" type="button">Clear Cache</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- User Menu Dropdown -->
+    <div id="userMenu" class="user-menu hidden">
+        <div class="menu-item" id="myProfileMenuItem">👤 My Profile</div>
+        <div class="menu-item" id="notificationSettingsMenuItem">🔔 Notifications</div>
+        <div class="menu-item" id="helpMenuItem">❓ Help & Support</div>
+        <div class="menu-divider"></div>
+        <div class="menu-item" id="logoutMenuItem">🚪 Logout</div>
+    </div>
+
+    <!-- Search Area Modal -->
+    <div id="searchAreaModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="searchAreaModalTitle">Add Search Area</h3>
+                <button class="modal-close" id="closeSearchAreaModal" type="button">&times;</button>
+            </div>
+            <form id="searchAreaForm" class="modal-body">
+                <div class="form-group">
+                    <label for="areaName" class="form-label">Area Name</label>
+                    <input type="text" id="areaName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="areaCategory" class="form-label">Category</label>
+                    <select id="areaCategory" class="form-control" required>
+                        <option value="">Select Category</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Security">Security</option>
+                        <option value="Cloud">Cloud Services</option>
+                        <option value="Analytics">Data & Analytics</option>
+                        <option value="Infrastructure">Infrastructure</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="areaKeywords" class="form-label">Keywords (comma-separated)</label>
+                    <textarea id="areaKeywords" class="form-control" rows="3" placeholder="e.g., ERP, implementation, consulting"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="areaDescription" class="form-label">Description</label>
+                    <textarea id="areaDescription" class="form-control" rows="2"></textarea>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn--outline" id="cancelSearchAreaModal">Cancel</button>
+                <button type="submit" form="searchAreaForm" class="btn btn--primary">Save Search Area</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Invitation Modal -->
+    <div id="userInviteModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Invite New User</h3>
+                <button class="modal-close" id="closeUserInviteModal" type="button">&times;</button>
+            </div>
+            <form id="userInviteForm" class="modal-body">
+                <div class="form-group">
+                    <label for="inviteEmail" class="form-label">Email Address</label>
+                    <input type="email" id="inviteEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="inviteRole" class="form-label">Role</label>
+                    <select id="inviteRole" class="form-control" required>
+                        <option value="Viewer">Viewer</option>
+                        <option value="Editor">Editor</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inviteDepartment" class="form-label">Department</label>
+                    <input type="text" id="inviteDepartment" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="inviteMessage" class="form-label">Welcome Message (Optional)</label>
+                    <textarea id="inviteMessage" class="form-control" rows="3" placeholder="Welcome to our RFP monitoring platform..."></textarea>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn--outline" id="cancelUserInviteModal">Cancel</button>
+                <button type="submit" form="userInviteForm" class="btn btn--primary">Send Invitation</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
